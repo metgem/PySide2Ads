@@ -1,0 +1,4 @@
+include versioneer.py
+include PySide2Ads/_version.py
+include PySide2Ads/__init__.py
+include PySide2Ads/QtAds/__init__.py

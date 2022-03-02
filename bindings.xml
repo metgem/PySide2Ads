@@ -1,0 +1,380 @@
+<?xml version="1.0"?>
+<typesystem package="ads">
+    <primitive-type name="bool"/>
+    <primitive-type name="std::string"/>
+    <primitive-type name="std::function"/>
+    <primitive-type name="ads::CDockingStateReader">
+        <include file-name="DockingStateReader.h" location="global"/>
+    </primitive-type>
+    <primitive-type name="ads::IFloatingWidget">
+        <include file-name="FloatingDockContainer.h" location="global"/>
+    </primitive-type>
+    <primitive-type name="ads::CDockWidget::FactoryFunc">
+        <include file-name="DockWidget.h" location="global"/>
+    </primitive-type>
+    
+    <load-typesystem name="typesystem_core.xml" generate="no"/>
+    <load-typesystem name="typesystem_widgets.xml" generate="no"/>
+    <load-typesystem name="typesystem_gui.xml" generate="no"/>
+    
+    <namespace-type name="ads">
+        <enum-type name="DockWidgetArea" flags="DockWidgetAreas" />
+        <enum-type name="TitleBarButton" />
+        <enum-type name="eDragState" />
+        <enum-type name="eIcon" />
+        <enum-type name="eBitwiseOperator" />
+        
+        <object-type name="CDockAreaTabBar">
+            <modify-function signature="CDockAreaTabBar(ads::CDockAreaWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+           <modify-function signature="insertTab(int, ads::CDockWidgetTab*)">
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+           <modify-function signature="removeTab(ads::CDockWidgetTab*)">
+                <modify-argument index="1">
+                    <parent index="this" action="remove"/>
+                </modify-argument>
+            </modify-function>
+        </object-type>
+        
+        <object-type name="CDockAreaTitleBar">
+            <modify-function signature="CDockAreaTitleBar(ads::CDockAreaWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+           <modify-function signature="insertWidget(int, QWidget *)">
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+        </object-type>
+        
+        <object-type name="CDockAreaWidget">
+            <enum-type name="eDockAreaFlag" flags="DockAreaFlags" />
+            
+            <modify-function signature="insertDockWidget(int, ads::CDockWidget*, bool)">
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="addDockWidget(ads::CDockWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="removeDockWidget(ads::CDockWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="remove"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="internalSetCurrentDockWidget(ads::CDockWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="CDockAreaWidget(ads::CDockManager*, ads::CDockContainerWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+        </object-type>
+        
+        <object-type name="CDockComponentsFactory">
+            <modify-function signature="createDockWidgetTab(ads::CDockWidget*) const">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="createDockAreaTabBar(ads::CDockAreaWidget*) const">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="createDockAreaTitleBar(ads::CDockAreaWidget*) const">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="setFactory(ads::CDockComponentsFactory*)">
+                <modify-argument index="1">
+                    <define-ownership owner="c++"/>
+                </modify-argument>
+                <inject-code>
+                    //this function is static we need keep ref to default value, to be able to call python virtual functions
+                    static PyObject* _defaultValue = 0;
+                    %CPPSELF.%FUNCTION_NAME(%1);
+                    Py_INCREF(%PYARG_1);
+                    if (_defaultValue)
+                        Py_DECREF(_defaultValue);
+
+                    _defaultValue = %PYARG_1;
+                </inject-code>
+            </modify-function>
+        </object-type>
+        
+        <object-type name="CDockContainerWidget">
+            <modify-function signature="dropFloatingWidget(ads::CFloatingDockContainer*, const QPoint&amp;)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="dropWidget(QWidget*, ads::DockWidgetArea, ads::CDockAreaWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="addDockArea(ads::CDockAreaWidget*, ads::DockWidgetArea)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="removeDockArea(ads::CDockAreaWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="remove"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="CDockContainerWidget(ads::CDockManager*, QWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="addDockWidget(ads::DockWidgetArea, ads::CDockWidget*, ads::CDockAreaWidget*)">
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+                <modify-argument index="3">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="removeDockWidget(ads::CDockWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+        </object-type>
+        
+        <object-type name="CDockFocusController">
+            <modify-function signature="CDockFocusController(ads::CDockManager*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+        </object-type>
+        
+        <object-type name="CDockManager">
+            <enum-type name="eViewMenuInsertionOrder" />
+            <enum-type name="eConfigFlag" flags="ConfigFlags" />
+            
+            <modify-function signature="registerFloatingWidget(ads::CFloatingDockContainer*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="removeFloatingWidget(ads::CFloatingDockContainer*)">
+                <modify-argument index="1">
+                    <parent index="this" action="remove"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="registerDockContainer(ads::CDockContainerWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="removeDockContainer(ads::CDockContainerWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="remove"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="CDockManager(QWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="addDockWidget(ads::DockWidgetArea, ads::CDockWidget*, ads::CDockAreaWidget*)">
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+                <modify-argument index="3">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="addDockWidgetTab(ads::DockWidgetArea, ads::CDockWidget*)">
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="addDockWidgetTabToArea(ads::CDockWidget*, ads::CDockAreaWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="addDockWidgetFloating(ads::CDockWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="removeDockWidget(ads::CDockWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="remove"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="setCentralWidget(ads::CDockWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="addToggleViewActionToMenu(QAction*, const QString&amp;, const QIcon&amp;)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+        </object-type>
+        
+        <object-type name="CDockOverlay">
+            <enum-type name="eMode" />
+            
+            <modify-function signature="CDockOverlay(QWidget*, ads::CDockOverlay::eMode)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+        </object-type>
+        
+        <object-type name="CDockSplitter">
+            <modify-function signature="CDockSplitter(QWidget *)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="CDockSplitter(Qt::Orientation, QWidget *)">
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+        </object-type>
+        
+        <object-type name="CDockWidget">
+            <enum-type name="DockWidgetFeature" flags="DockWidgetFeatures" />
+            <enum-type name="eState" />
+            <enum-type name="eInsertMode" />
+            <enum-type name="eMinimumSizeHintMode" />
+            <enum-type name="eToggleViewActionMode" />
+            
+            <modify-function signature="setDockManager(ads::CDockManager*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="setDockArea(ads::CDockAreaWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="CDockWidget(const QString&amp;, QWidget*)">
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="setWidget(QWidget*, ads::CDockWidget::eInsertMode)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="setWidgetFactory(ads::CDockWidget::FactoryFunc, ads::CDockWidget::eInsertMode)" remove="all" />
+            <add-function signature="setWidgetFactory(PyObject*)">
+                <inject-code class="target" position="beginning" file="glue/cdockwidget.cpp" snippet="cdockwidget-setwidgetfactory"/>
+            </add-function>
+            <add-function signature="setWidgetFactory(PyObject*, ads::CDockWidget::eInsertMode)">
+                <inject-code class="target" position="beginning" file="glue/cdockwidget.cpp" snippet="cdockwidget-setwidgetfactory"/>
+            </add-function>
+            <modify-function signature="takeWidget()">
+                <modify-argument index="return">
+                    <parent index="this" action="remove"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="setToolBar(QToolBar*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="setTitleBarActions(QList&lt;QAction*&gt;)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+        </object-type>
+        
+        <object-type name="CDockWidgetTab">
+            <modify-function signature="CDockWidgetTab(ads::CDockWidget*, QWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="setDockAreaWidget(ads::CDockAreaWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+        </object-type>
+        
+        <object-type name="CElidingLabel">
+            <modify-function signature="CElidingLabel(QWidget*, QFlags&lt;Qt::WindowType&gt;)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="CElidingLabel(const QString&amp;, QWidget*, QFlags&lt;Qt::WindowType&gt;)">
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+        </object-type>
+        
+        <object-type name="CFloatingDockContainer">
+            <!-- Qt5: remove native event for now -->
+            <modify-function signature="nativeEvent(const QByteArray &amp;, void *, long *)" remove="all" />
+        
+            <modify-function signature="CFloatingDockContainer(ads::CDockManager*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="CFloatingDockContainer(ads::CDockAreaWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+            <modify-function signature="CFloatingDockContainer(ads::CDockWidget*)">
+                <modify-argument index="1">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+        </object-type>
+        
+        <object-type name="CIconProvider">
+            <modify-function signature="registerCustomIcon(ads::eIcon, const QIcon&amp;)">
+                <modify-argument index="2">
+                    <parent index="this" action="add"/>
+                </modify-argument>
+            </modify-function>
+        </object-type>
+    </namespace-type>    
+</typesystem>
