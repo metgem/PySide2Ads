@@ -11,10 +11,8 @@ ads::CDockWidget::FactoryFunc callback = [callable](QWidget* widget) -> QWidget 
     PyTuple_SET_ITEM(arglist, 0, %CONVERTTOPYTHON[QWidget*](widget));
     PyObject *ret(PyObject_CallObject(callable, arglist));
     QWidget *w = static_cast<QWidget *>(Shiboken::Conversions::cppPointer(SbkPySide2_QtWidgetsTypes[SBK_QWIDGET_IDX], reinterpret_cast<SbkObject *>(ret)));
-                    return w;
     return w;
 
 };
-ads::CDockWidget::FactoryFunc func = callback;
 %CPPSELF.%FUNCTION_NAME(callback);
 // @snippet cdockwidget-setwidgetfactory

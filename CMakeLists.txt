@@ -49,10 +49,10 @@ set(generated_sources
     )
 
 # ================================== Shiboken detection ======================================
-if(NOT python_interpreter)
-    find_program(python_interpreter "python")
+if(NOT PYTHON_EXECUTABLE)
+    find_program(PYTHON_EXECUTABLE "python")
 endif()
-message(STATUS "Using python interpreter: ${python_interpreter}")
+message(STATUS "Using python interpreter: ${PYTHON_EXECUTABLE}")
 
 find_package(Shiboken2 2.0.0 REQUIRED)
 find_package(Shiboken2 COMPONENTS libshiboken REQUIRED)
@@ -137,15 +137,34 @@ target_link_libraries(${bindings_library} PRIVATE ${SHIBOKEN_LIBRARY})
 target_link_libraries(${bindings_library} PRIVATE ${ADS_LINK_LIBRARIES})
 target_link_libraries(${bindings_library} PRIVATE ${ADS_LIBRARY})
 
+if (UNIX)
+    target_link_libraries(qmn PUBLIC qtadvanceddocking PySide2::pyside2)
+endif()
+
 # Adjust the name of generated module.
 set_property(TARGET ${bindings_library} PROPERTY PREFIX "")
-set_property(TARGET ${bindings_library} PROPERTY OUTPUT_NAME
-             "${bindings_library}${PYTHON_EXTENSION_SUFFIX}")
 if(WIN32)
+    set_property(TARGET ${bindings_library} PROPERTY OUTPUT_NAME
+             "${bindings_library}${PYTHON_EXTENSION_SUFFIX}")
     set_property(TARGET ${bindings_library} PROPERTY SUFFIX "${PYTHON_CONFIG_SUFFIX}.pyd")
+else()
+    set_property(TARGET ${bindings_library} PROPERTY OUTPUT_NAME
+             "${bindings_library}${PYTHON_CONFIG_SUFFIX}")
 endif()
 
 # Make sure the linker doesn't complain about not finding Python symbols on macOS.
 if(APPLE)
   set_target_properties(${bindings_library} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
 endif(APPLE)
+
+
+# =============================== CMake target - pyi =============================
+set(generate_pyi_options QtAds --sys-path
+        "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/../..")
+
+# Add target to generate pyi file, which depends on the module target.
+add_custom_target("${bindings_library}_pyi" ALL
+                  COMMAND ${CMAKE_COMMAND} -E env ${ld_prefix}
+                  "${PYTHON_EXECUTABLE}"
+                  "${CMAKE_CURRENT_SOURCE_DIR}/support/generate_pyi.py" ${generate_pyi_options})
+add_dependencies("${bindings_library}_pyi" ${bindings_library})
