@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  release:
+    types: [ published ]
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Cache conda packages
+      uses: actions/cache@v2
+      env:
+        # Increase this value to reset cache
+        CACHE_NUMBER: 0
+      with:
+        path: ~/conda_pkgs_dir
+        key: ${{ runner.os }}-${{ env.CACHE_NUMBER }}
+    - name: Set up Miniconda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        use-only-tar-bz2: true
+        auto-update-conda: true
+        channels: conda-forge
+    - name: Conda info
+      shell: bash -l {0}
+      run: |
+        conda info
+        conda list
+        conda config --show-sources
+        conda config --show
+    - name: Install build dependencies
+      shell: bash -l {0}
+      run: |
+        conda install -n base conda-build conda-verify 
+        conda install anaconda-client
+    - name: Install libiconv
+      shell: bash -l {0}
+      run: conda install -n base libiconv
+      if: runner.os == 'Linux'
+    - name: Build
+      shell: bash -l {0}
+      run: |
+        conda config --set anaconda_upload yes
+        conda build recipe --token ${{ secrets.ANACONDA_UPLOAD_TOKEN }} --user metgem
