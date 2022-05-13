@@ -138,7 +138,7 @@ target_link_libraries(${bindings_library} PRIVATE ${ADS_LINK_LIBRARIES})
 target_link_libraries(${bindings_library} PRIVATE ${ADS_LIBRARY})
 
 if (UNIX)
-    target_link_libraries(qmn PUBLIC qtadvanceddocking PySide2::pyside2)
+    target_link_libraries(${bindings_library} PUBLIC qtadvanceddocking PySide2::pyside2)
 endif()
 
 # Adjust the name of generated module.
