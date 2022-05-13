@@ -32,7 +32,7 @@ jobs:
         activate-environment: tests
         use-only-tar-bz2: true
         auto-update-conda: true
-        channels: conda-forge
+        channels: conda-forge, metgem
     - name: Conda info
       shell: bash -l {0}
       run: |
