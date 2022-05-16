@@ -26,6 +26,7 @@ requirements:
     - mesalib  # [unix]
     
   run:
+    - {{ pin_compatible('python') }}
     - qtadvanceddocking
     - pyside2
     
