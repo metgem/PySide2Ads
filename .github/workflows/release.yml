@@ -10,6 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        python-version: [3.8, 3.9]
         os: [ubuntu-latest, windows-2019, macos-latest]
       fail-fast: false
 
@@ -23,11 +24,12 @@ jobs:
       with:
         path: ~/conda_pkgs_dir
         key: ${{ runner.os }}-${{ env.CACHE_NUMBER }}
-    - name: Set up Miniconda
+    - name: Set up Python ${{ matrix.python-version }} (Miniconda)
       uses: conda-incubator/setup-miniconda@v2
       with:
         use-only-tar-bz2: true
         auto-update-conda: true
+        python-version: ${{ matrix.python-version }}
         channels: conda-forge, metgem
     - name: Conda info
       shell: bash -l {0}
@@ -49,4 +51,4 @@ jobs:
       shell: bash -l {0}
       run: |
         conda config --set anaconda_upload yes
-        conda build recipe --token ${{ secrets.ANACONDA_UPLOAD_TOKEN }} --user metgem
+        conda build recipe --python ${{ matrix.python-version }} --token ${{ secrets.ANACONDA_UPLOAD_TOKEN }} --user metgem

@@ -8,7 +8,7 @@ source:
   path: ../
   
 build:
-  number: 0
+  number: 1
   script: python -m pip install . -vvv
 
 requirements:
@@ -26,7 +26,6 @@ requirements:
     - mesalib  # [unix]
     
   run:
-    - python
     - qtadvanceddocking
     - pyside2
     
