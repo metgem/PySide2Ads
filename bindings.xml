@@ -348,10 +348,7 @@
             </modify-function>
         </object-type>
         
-        <object-type name="CFloatingDockContainer">
-            <!-- Qt5: remove native event for now -->
-            <modify-function signature="nativeEvent(const QByteArray &amp;, void *, long *)" remove="all" />
-        
+        <object-type name="CFloatingDockContainer">        
             <modify-function signature="CFloatingDockContainer(ads::CDockManager*)">
                 <modify-argument index="1">
                     <parent index="this" action="add"/>
